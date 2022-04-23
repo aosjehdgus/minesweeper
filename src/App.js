@@ -1,10 +1,18 @@
-import React from "react";
+import React from 'react';
+import styled from 'styled-components';
+import Grid from './components/Grid';
+
+const Container = styled.main`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
 
 const App = () => {
   return (
-    <div className="App">
-      <h1>Minesweeper</h1>
-    </div>
+    <Container>
+      <Grid />
+    </Container>
   );
 };
 
