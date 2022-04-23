@@ -28,8 +28,11 @@
     "webpack-dev-server": "^4.8.1"
   },
   "dependencies": {
+    "@react-icons/all-files": "^4.1.0",
+    "@reduxjs/toolkit": "^1.8.1",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
+    "react-redux": "^8.0.1",
     "styled-components": "^5.3.5"
   },
   "scripts": {
