@@ -4,10 +4,11 @@ module.exports = {
     es6: true,
     node: true,
   },
-  extends: ["airbnb", "prettier", "plugin:prettier/recommended"],
+  extends: ['airbnb', 'prettier', 'plugin:prettier/recommended'],
   rules: {
-    "react/jsx-filename-extension": ["error", { extensions: [".js", ".jsx"] }],
-    "react/function-component-definition": 0,
+    'react/jsx-filename-extension': ['error', { extensions: ['.js', '.jsx'] }],
+    'react/function-component-definition': 0,
+    'no-unused-vars': 0,
   },
   parserOptions: {
     ecmaVersion: 2020,
