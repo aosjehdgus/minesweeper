@@ -1,10 +1,11 @@
+/* eslint-disable no-plusplus */
 /* eslint-disable react/no-array-index-key */
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import GridHeader from './GridHeader';
 import GridRow from './GridRow';
-import { mineAction, mineSelector } from '../slice';
+import { minesweeperAction, minesweeperSelector } from '../slice';
 
 const GridContainer = styled.div`
   display: flex;
@@ -13,11 +14,11 @@ const GridContainer = styled.div`
 
 const Grid = () => {
   const dispatch = useDispatch();
-  const { grid } = useSelector(mineSelector.all);
-  const { PLANT_MINE } = mineAction;
+  const { grid } = useSelector(minesweeperSelector.all);
+  const { GAME_SET } = minesweeperAction;
 
   useEffect(() => {
-    dispatch(PLANT_MINE());
+    dispatch(GAME_SET());
   }, []);
 
   return (

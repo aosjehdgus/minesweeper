@@ -1,44 +1,80 @@
+/* eslint-disable no-plusplus */
 /* eslint-disable no-param-reassign */
 import { createSelector, createSlice } from '@reduxjs/toolkit';
 
-const name = 'mine';
+const name = 'minesweeper';
 const initialState = {
-  grid: Array.from(Array(8), () =>
+  game: true,
+  grid: [],
+  mine: 15,
+  timer: false,
+};
+const plantMine = () => {
+  const candidate = Array(8 * 8)
+    .fill()
+    .map((arr, i) => {
+      return i;
+    });
+  const shuffle = [];
+  while (candidate.length > 8 * 8 - 15) {
+    const chosen = candidate.splice(
+      Math.floor(Math.random() * candidate.length),
+      1,
+    )[0];
+    shuffle.push(chosen);
+  }
+
+  const data = Array.from(Array(8), () =>
     Array(8).fill({
       value: 0,
       isOpened: false,
       isFlagged: false,
     }),
-  ),
+  );
+
+  for (let k = 0; k < shuffle.length; k++) {
+    const ver = Math.floor(shuffle[k] / 8);
+    const hor = shuffle[k] % 8;
+    data[ver][hor] = {
+      value: -1,
+      isOpened: false,
+      isFlagged: false,
+    };
+  }
+
+  return data;
 };
 
 const reducers = {
-  PLANT_MINE: state => {
-    state.grid = state.grid.map(row => {
-      const random = Math.floor(Math.random() * 8);
-      row.splice(random, 1, {
-        value: -1,
-        isOpened: false,
-        isFlagged: false,
-      });
-      return row;
-    });
+  START_GAME: state => {
+    state.timer = true;
+  },
+  END_GAME: state => {
+    state.game = false;
+    state.timer = false;
+  },
+  GAME_SET: state => {
+    state.game = true;
+    state.grid = plantMine();
+    state.mine = 15;
+    state.timer = false;
   },
   CELL_OPENED: (state, { payload }) => {
-    const { rowIndex, columnIndex } = payload;
-    state.grid[rowIndex][columnIndex].isOpened = true;
-  },
-  FLAG_NOTE: (state, { payload }) => {
-    const { rowIndex, columnIndex } = payload;
-    if (state.grid[rowIndex][columnIndex].isFlagged === false) {
-      state.grid[rowIndex][columnIndex].isFlagged = true;
-    } else {
-      state.grid[rowIndex][columnIndex].isFlagged = false;
+    const { value, row, col } = payload;
+    state.grid[row][col].isOpened = true;
+    if (state.grid[row][col].value === 0) {
+      state.grid[row][col].value = value;
     }
   },
-  SET_VALUE: (state, { payload }) => {
-    const { value, rowIndex, columnIndex } = payload;
-    state.grid[rowIndex][columnIndex].value = value;
+  FLAG_NOTE: (state, { payload }) => {
+    const { row, col } = payload;
+    if (state.grid[row][col].isFlagged === false) {
+      state.grid[row][col].isFlagged = true;
+      state.mine -= 1;
+    } else {
+      state.grid[row][col].isFlagged = false;
+      state.mine += 1;
+    }
   },
 };
 
@@ -49,21 +85,43 @@ const selectGridState = createSelector(
   grid => grid,
 );
 
+const selectGameState = createSelector(
+  state => state.game,
+  game => game,
+);
+const selectMineState = createSelector(
+  state => state.mine,
+  mine => mine,
+);
+
+const selectTimerState = createSelector(
+  state => state.timer,
+  timer => timer,
+);
+
 const selectAllState = createSelector(
   selectGridState,
-
-  grid => {
+  selectGameState,
+  selectMineState,
+  selectTimerState,
+  (grid, game, mine, timer) => {
     return {
       grid,
+      game,
+      mine,
+      timer,
     };
   },
 );
 
-export const MINE = slice.name;
-export const mineReducer = slice.reducer;
-export const mineAction = slice.actions;
+export const MINESWEEPER = slice.name;
+export const minesweeperReducer = slice.reducer;
+export const minesweeperAction = slice.actions;
 
-export const mineSelector = {
-  grid: state => selectGridState(state[MINE]),
-  all: state => selectAllState(state[MINE]),
+export const minesweeperSelector = {
+  grid: state => selectGridState(state[MINESWEEPER]),
+  game: state => selectGameState(state[MINESWEEPER]),
+  mine: state => selectMineState(state[MINESWEEPER]),
+  timer: state => selectTimerState(state[MINESWEEPER]),
+  all: state => selectAllState(state[MINESWEEPER]),
 };

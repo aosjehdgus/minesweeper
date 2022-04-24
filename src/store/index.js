@@ -1,9 +1,9 @@
 import { configureStore } from '@reduxjs/toolkit';
 
-import { MINE, mineReducer } from '../mine/slice';
+import { MINESWEEPER, minesweeperReducer } from '../mine/slice';
 
 export const rootReducer = {
-  [MINE]: mineReducer,
+  [MINESWEEPER]: minesweeperReducer,
 };
 
 export const createStore = () => {
