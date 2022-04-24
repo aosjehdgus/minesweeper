@@ -3,21 +3,22 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { mineSelector } from '../slice';
+import { minesweeperSelector } from '../slice';
 import GridCell from './GridCell';
 
 const Row = styled.div`
   display: flex;
-  height: 5rem;
 `;
 
 const GridRow = ({ rows, row }) => {
-  const { game } = useSelector(mineSelector.all);
+  const { game } = useSelector(minesweeperSelector.all);
   const [btnDisabled, setBtnDisabled] = useState(false);
 
   useEffect(() => {
     if (game === false) {
       setBtnDisabled(true);
+    } else {
+      setBtnDisabled(false);
     }
   }, [game]);
 
