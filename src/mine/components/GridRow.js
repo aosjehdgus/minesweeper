@@ -1,7 +1,9 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable react/no-array-index-key */
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
+import { mineSelector } from '../slice';
 import GridCell from './GridCell';
 
 const Row = styled.div`
@@ -9,17 +11,26 @@ const Row = styled.div`
   height: 5rem;
 `;
 
-const GridRow = ({ row, rowIndex }) => {
+const GridRow = ({ rows, row }) => {
+  const { game } = useSelector(mineSelector.all);
+  const [btnDisabled, setBtnDisabled] = useState(false);
+
+  useEffect(() => {
+    if (game === false) {
+      setBtnDisabled(true);
+    }
+  }, [game]);
+
   return (
     <Row>
-      {row.map((cell, columnIndex) => {
+      {rows.map((cell, col) => {
         return (
           <GridCell
-            row={row}
-            key={columnIndex}
+            disabled={btnDisabled}
+            key={col}
             cell={cell}
-            rowIndex={rowIndex}
-            columnIndex={columnIndex}
+            row={row}
+            col={col}
           />
         );
       })}
