@@ -1,8 +1,11 @@
 /* eslint-disable no-plusplus */
 import React from 'react';
 import styled from 'styled-components';
-import { useSelector } from 'react-redux';
-import { mineSelector } from '../slice';
+import { useDispatch, useSelector } from 'react-redux';
+import { FaRegLaughBeam } from '@react-icons/all-files/fa/FaRegLaughBeam';
+import { FaRegFrown } from '@react-icons/all-files/fa/FaRegFrown';
+import { FcFlashOn } from '@react-icons/all-files/fc/FcFlashOn';
+import { minesweeperAction, minesweeperSelector } from '../slice';
 
 const Header = styled.header`
   display: flex;
@@ -11,28 +14,48 @@ const Header = styled.header`
   margin: 1rem 0 1rem 0;
 `;
 
+const MineCount = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5rem;
+`;
+
+const RestartBtn = styled.button`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 0;
+  background: inherit;
+  cursor: pointer;
+`;
+
+const SetRecord = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5rem;
+`;
+
 const GridHeader = () => {
-  const { grid } = useSelector(mineSelector.all);
+  const dispatch = useDispatch();
+  const { game, mine } = useSelector(minesweeperSelector.all);
+  const { GAME_SET } = minesweeperAction;
 
-  const mineCount = () => {
-    let count = 0;
-
-    for (let i = 0; i < 8; i++) {
-      for (let j = 0; j < 8; j++) {
-        if (grid[i][j].value === -1) {
-          count++;
-        }
-      }
-    }
-
-    return count;
+  const restartBtn = () => {
+    dispatch(GAME_SET());
   };
 
   return (
     <Header>
-      <div>남은 지뢰 : {mineCount()} </div>
-      <button type="button">재시작 버튼</button>
-      <div>타이머</div>
+      <MineCount>
+        <FcFlashOn />
+        {mine}
+      </MineCount>
+      <RestartBtn type="button" onClick={() => restartBtn()}>
+        {game ? <FaRegLaughBeam size={25} /> : <FaRegFrown size={25} />}
+      </RestartBtn>
+      <SetRecord>123</SetRecord>
     </Header>
   );
 };
