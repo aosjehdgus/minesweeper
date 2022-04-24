@@ -23,8 +23,8 @@ const Grid = () => {
   return (
     <GridContainer>
       <GridHeader />
-      {grid.map((row, rowIndex) => {
-        return <GridRow key={rowIndex} row={row} rowIndex={rowIndex} />;
+      {grid.map((rows, row) => {
+        return <GridRow key={row} rows={rows} row={row} />;
       })}
     </GridContainer>
   );

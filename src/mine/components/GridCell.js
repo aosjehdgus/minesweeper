@@ -27,58 +27,128 @@ const OpenCell = styled.span`
   font-size: 1.5rem;
 `;
 
-const GridCell = ({ cell, rowIndex, columnIndex }) => {
+const GridCell = ({ cell, row, col, disabled }) => {
   const dispatch = useDispatch();
-  const { grid } = useSelector(mineSelector.all);
-  const { CELL_OPENED, FLAG_NOTE, SET_VALUE } = mineAction;
-  const STATE = cell.value === -1 ? '지뢰' : '일반';
+  const { grid, game } = useSelector(mineSelector.all);
+  const { END_GAME, CELL_OPENED, FLAG_NOTE } = mineAction;
+  const { value, isOpened, isFlagged } = cell;
+
+  const STATE = value === -1 ? '지뢰' : '일반';
 
   const handleLeftClick = () => {
+    if (!game) {
+      return;
+    }
+
     if (STATE === '지뢰') {
       for (let i = 0; i < 8; i++) {
         for (let j = 0; j < 8; j++) {
           if (grid[i][j].value === -1) {
-            dispatch(CELL_OPENED({ rowIndex: i, columnIndex: j }));
+            dispatch(CELL_OPENED({ row: i, col: j }));
           }
         }
       }
+
+      dispatch(END_GAME());
     }
     if (STATE === '일반') {
       let count = 0;
 
-      if (grid[rowIndex - 1][columnIndex - 1].value === -1) count++;
-      if (grid[rowIndex - 1][columnIndex].value === -1) count++;
-      if (grid[rowIndex - 1][columnIndex + 1].value === -1) count++;
-      if (grid[rowIndex][columnIndex - 1].value === -1) count++;
-      if (grid[rowIndex][columnIndex + 1].value === -1) count++;
-      if (grid[rowIndex + 1][columnIndex + 1].value === -1) count++;
-      if (grid[rowIndex + 1][columnIndex].value === -1) count++;
-      if (grid[rowIndex + 1][columnIndex - 1].value === -1) count++;
-      dispatch(SET_VALUE({ value: count, rowIndex, columnIndex }));
-    }
+      if (row === 0 && col === 0) {
+        if (grid[row][col + 1].value === -1) count++;
+        if (grid[row + 1][col].value === -1) count++;
+        if (grid[row + 1][col + 1].value === -1) count++;
+      }
 
-    if (cell.isOpened === false && cell.isFlagged === false) {
-      dispatch(CELL_OPENED({ rowIndex, columnIndex }));
+      if (row === 0 && col === 7) {
+        if (grid[row][col - 1].value === -1) count++;
+        if (grid[row + 1][col].value === -1) count++;
+        if (grid[row + 1][col - 1].value === -1) count++;
+      }
+
+      if (row === 7 && col === 0) {
+        if (grid[row - 1][col].value === -1) count++;
+        if (grid[row - 1][col + 1].value === -1) count++;
+        if (grid[row][col + 1].value === -1) count++;
+      }
+
+      if (row === 7 && col === 7) {
+        if (grid[row - 1][col - 1].value === -1) count++;
+        if (grid[row - 1][col].value === -1) count++;
+        if (grid[row][col - 1].value === -1) count++;
+      }
+
+      if (row === 0 && col < 7 && col > 0) {
+        if (grid[row][col - 1].value === -1) count++;
+        if (grid[row][col + 1].value === -1) count++;
+        if (grid[row + 1][col + 1].value === -1) count++;
+        if (grid[row + 1][col].value === -1) count++;
+        if (grid[row + 1][col - 1].value === -1) count++;
+      }
+
+      if (row === 7 && col < 7 && col > 0) {
+        if (grid[row - 1][col - 1].value === -1) count++;
+        if (grid[row - 1][col].value === -1) count++;
+        if (grid[row - 1][col + 1].value === -1) count++;
+        if (grid[row][col - 1].value === -1) count++;
+        if (grid[row][col + 1].value === -1) count++;
+      }
+
+      if (col === 0 && row < 7 && col > 0) {
+        if (grid[row - 1][col].value === -1) count++;
+        if (grid[row - 1][col + 1].value === -1) count++;
+        if (grid[row][col + 1].value === -1) count++;
+        if (grid[row + 1][col + 1].value === -1) count++;
+        if (grid[row + 1][col].value === -1) count++;
+      }
+
+      if (col === 7 && row < 7 && row > 0) {
+        if (grid[row - 1][col - 1].value === -1) count++;
+        if (grid[row - 1][col].value === -1) count++;
+        if (grid[row][col - 1].value === -1) count++;
+        if (grid[row + 1][col].value === -1) count++;
+        if (grid[row + 1][col - 1].value === -1) count++;
+      }
+
+      if (row !== 0 && row !== 7 && col !== 0 && col !== 7) {
+        if (grid[row - 1][col - 1].value === -1) count++;
+        if (grid[row - 1][col].value === -1) count++;
+        if (grid[row - 1][col + 1].value === -1) count++;
+        if (grid[row][col - 1].value === -1) count++;
+        if (grid[row][col + 1].value === -1) count++;
+        if (grid[row + 1][col + 1].value === -1) count++;
+        if (grid[row + 1][col].value === -1) count++;
+        if (grid[row + 1][col - 1].value === -1) count++;
+      }
+
+      if (game && isOpened === false) {
+        dispatch(CELL_OPENED({ value: count, row, col }));
+      }
     }
   };
 
   const handleRightClick = e => {
     e.preventDefault();
-    dispatch(FLAG_NOTE({ rowIndex, columnIndex }));
+    if (game) {
+      dispatch(FLAG_NOTE({ row, col }));
+    }
   };
 
   return (
     <Button
+      disabled={disabled}
       onClick={() => handleLeftClick()}
       onContextMenu={e => handleRightClick(e)}
     >
-      {cell.isOpened && cell.value === -1 ? (
+      {/* 
+    value === -1 : 지뢰 
+    value >= 0 : 주변 지뢰 카운트
+    */}
+      {isOpened && value === -1 ? (
         <FaBomb />
-      ) : cell.isOpened && cell.value > 0 ? (
-        <OpenCell>{cell.value}</OpenCell>
-      ) : cell.isOpened && cell.value === 0 ? (
-        <OpenCell />
-      ) : cell.isFlagged ? (
+      ) : isOpened && value >= 0 ? (
+        <OpenCell>{value > 0 ? value : ''}</OpenCell>
+      ) : isFlagged ? (
         <FaFlagCheckered />
       ) : (
         <div />
