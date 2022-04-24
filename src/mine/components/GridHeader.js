@@ -1,5 +1,6 @@
+/* eslint-disable consistent-return */
 /* eslint-disable no-plusplus */
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { FaRegLaughBeam } from '@react-icons/all-files/fa/FaRegLaughBeam';
@@ -39,12 +40,28 @@ const SetRecord = styled.div`
 
 const GridHeader = () => {
   const dispatch = useDispatch();
-  const { game, mine } = useSelector(minesweeperSelector.all);
+  const { game, mine, timer } = useSelector(minesweeperSelector.all);
   const { GAME_SET } = minesweeperAction;
+  const [sec, setSec] = useState(0);
+
+  const time = useRef(0);
+  const timerId = useRef(null);
 
   const restartBtn = () => {
+    setSec(0);
+    time.current = 0;
     dispatch(GAME_SET());
   };
+
+  useEffect(() => {
+    if (timer) {
+      timerId.current = setInterval(() => {
+        setSec(time.current % 60);
+        time.current += 1;
+      }, 1000);
+      return () => clearTimeout(timerId.current);
+    }
+  }, [timer]);
 
   return (
     <Header>
@@ -55,7 +72,7 @@ const GridHeader = () => {
       <RestartBtn type="button" onClick={() => restartBtn()}>
         {game ? <FaRegLaughBeam size={25} /> : <FaRegFrown size={25} />}
       </RestartBtn>
-      <SetRecord>123</SetRecord>
+      <SetRecord>{sec}</SetRecord>
     </Header>
   );
 };
